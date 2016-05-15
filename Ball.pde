@@ -4,36 +4,24 @@ class Ball {
   Vec2D speed;
   float d=50;
   float dx, dy;
-  float maxSpeed=1;
-  int gravity_force;
-  float jitter_x, jitter_y;
-  float line_width=0.6;
-  int r,g,b;
-  boolean perlin; //shall make correction based on perlin-noise?
-
-  Ball(Vec2D pos, int gravity_force, int h_span, int v_span, float jitter_x, float jitter_y, boolean perlin, int r, int g, int b) {
-    this.gravity_force=gravity_force;
+  float maxSpeed=1.5;
+  int r=45;
+  int g=0;
+  int b=45;
+  Ball(Vec2D pos) {
     this.pos=pos;
-    this.jitter_x=jitter_x;
-    this.jitter_y=jitter_y;
-    this.r=r;
-    this.g=g;
-    this.b=b;
     dx=random(20, d);
-    dy=random(20, d);
-    if (perlin) {
-      float n = noise(pos.x,pos.y);
-      this.speed=new Vec2D(random(-h_span, h_span)*n, random(-v_span, v_span)*n);
-    } else {
-      this.speed=new Vec2D(random(-h_span, h_span), random(-v_span, v_span+gravity_force));
-    }
+    dy=dx;
+    this.speed=new Vec2D(random(-3, 3), random(-3, 3));
   }
 
   void update() {
-    move();
+    moveNoise();
+    //    moveRandom();
+    //    move();
     //bounce();
     //display();
-    //displayPoint();
+    displayPoint();
     wrap();
   }
 
@@ -47,31 +35,36 @@ class Ball {
   }
 
   void move() {
-    float adj_x=1;
-    float adj_y;
-    if (perlin) {
-      adj_x=noise(pos.x, pos.y);
-      adj_y=adj_x;
-    }
-    adj_y=adj_x;
-    Vec2D newspeed=new Vec2D(speed.x*adj_x, speed.y*adj_y);
-    newspeed.limit(maxSpeed);
-    pos.addSelf(newspeed);
+    speed.limit(maxSpeed);
+    pos.addSelf(speed);
+    //  pos.jitter(1);
+  }
+
+  void moveRandom() {
+    pos.x+=random(-maxSpeed, maxSpeed);
+    pos.y+=random(-maxSpeed, maxSpeed);
+  }
+
+  void moveNoise() {
+    pos.x+=cos(noise(pos.x*0.01, pos.y*0.01)*TWO_PI)*0.1;
+    pos.y+=sin(noise(pos.x*0.01, pos.y*0.01)*TWO_PI);
   }
 
   void wrap() {
-    if (pos.x<0) pos.x=random(width);
-    if (pos.x>width) pos.x=random(width);
-    if (pos.y<0) pos.y=random(height);
-    if (pos.y>height) pos.y=random(height);
+    if (pos.x<0) pos.x=width;
+    if (pos.x>width) pos.x=0;
+    if (pos.y<0) pos.y=height;
+    if (pos.y>height) pos.y=0;
+    
   }
 
   void lineBetween(Ball[] theOthers, int start, float th) {
-    for (int i=start; i<theOthers.length; i++) {
+    for (int i=start;i<theOthers.length;i++) {
       if (pos.distanceTo(theOthers[i].pos)<th) {
         pushStyle();
-        strokeWeight(line_width);
-        stroke(r, g, b, 5);
+        strokeWeight(0.5);
+        //stroke(50,5,50,5);
+        stroke(r,g,b,5);
         line(pos.x, pos.y, theOthers[i].pos.x, theOthers[i].pos.y);
         popStyle();
       }
