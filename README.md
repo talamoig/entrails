@@ -3,9 +3,8 @@
 Entrails is a [Processing](https://processing.org/) sketch generating images using [Perlin Noise](https://en.wikipedia.org/wiki/Perlin_noise)
 
 Sample image:
+
 ![alt tag](https://raw.githubusercontent.com/talamoig/entrails/master/sample.jpg)
-
-
 
 ## Requirements
 
